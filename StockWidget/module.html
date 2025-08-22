@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        :root {
+            --stock-font: 12px;
+            --price-font: 24px;
+            --trend-positiv: #58A906;
+            --trend-negative: #F35A2C;
+            --trend-font: 14px;
+            --chart-line: #11A0F3;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        *,
+        *:before,
+        *:after {
+            box-sizing: inherit;
+        }
+
+        /* Container mit 2 Spalten */
+        #container {
+            display: flex;
+            margin: 80px 0px 0px 0px;
+            height: calc(100% - (80px));
+        }
+
+        #header {
+            position: absolute;
+            top: 45px;
+            left: 20px;
+        }
+
+        #footer {
+            position: absolute;
+            left: 20px;
+            right: 20px;
+            bottom: 15px;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .line {
+            stroke: var(--chart-line);
+            stroke-width: 1;
+            fill: none;
+        }
+
+        .fill {
+            fill: url(#gradient);
+            stroke: none;
+        }
+
+        #stock {
+            font-size: var(--stock-font);
+            opacity: 50%;
+        }
+
+        #trend {
+            font-size: var(--trend-font);
+            font-weight: bold;
+            display: flex;
+        }
+
+        #trend.positive{
+            color: var(--trend-positiv);
+        }
+
+        #trend.negative{
+            color: var(--trend-negative);
+        }
+
+        #trend.positive .arrow::before {
+            content: "▲";
+            margin-right: 4px;
+        }
+
+        #trend.negative .arrow::before {
+            content: "▼";
+            margin-right: 4px;
+        }
+
+        #price {
+            font-size: var(--price-font);
+            font-weight: bold;
+        }
+
+        #period {
+            font-size: 10px;
+            opacity: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <div id="header">
+            <div id="stock"></div>
+            <div id="trend" class="negative">
+                <span class="arrow"></span>
+                <span class="value"></span>
+            </div>
+        </div>
+        <div id="footer">
+            <div id="price"></div>
+            <div id="period">1 T</div>
+        </div>
+        <svg id="chart" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <defs>
+                <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="var(--chart-line)" stop-opacity="0.4" />
+                    <stop offset="100%" stop-color="var(--chart-line)" stop-opacity="0" />
+                </linearGradient>
+            </defs>
+        </svg>
+    </div>
+    <script>
+        let drawSmooth = true;
+        let drawFill = true;
+        let drawOffset = 0;
+
+        // Funktion zum Erzeugen einer normale Linie
+        function createLinePath(pts) {
+            return "M " + pts.map(p => `${p.x},${p.y}`).join(" L ");
+        }
+
+        // Funktion zum Erzeugen eines glatten Pfads mit Bezier-Kurven
+        function createSmoothPath(pts) {
+            let d = `M ${pts[0].x},${pts[0].y}`;
+            for (let i = 1; i < pts.length - 1; i++) {
+                const xc = (pts[i].x + pts[i + 1].x) / 2;
+                const yc = (pts[i].y + pts[i + 1].y) / 2;
+                d += ` Q ${pts[i].x},${pts[i].y} ${xc},${yc}`;
+            }
+            d += ` T ${pts[pts.length - 1].x},${pts[pts.length - 1].y}`;
+            return d;
+        }
+
+        // Funktion zum Zeichnen, Variante wählbar
+        function drawChart(data) {
+            const svg = document.getElementById('chart');
+
+            const stepX = 100 / (data.length - 1);
+            const minVal = Math.min(...data);
+            const maxVal = Math.max(...data);
+            const availableHeight = 100 - drawOffset;
+            const range = maxVal - minVal;
+
+            // Sonderfall (flat line) abfangen
+            let points;
+            if (maxVal === minVal) {
+                // Flache Linie bei 50% Höhe
+                points = data.map((_, i) => {
+                    const x = i * stepX;
+                    const y = 50;  // mittig im Chart
+                    return { x, y };
+                });
+            } else {
+                points = data.map((val, i) => {
+                    const x = i * stepX;
+                    // min/max Bereich auf availableHeight skalieren
+                    const y = availableHeight - ((val - minVal) / range * availableHeight);
+                    return { x, y };
+                });
+            }
+            console.log("Points:", points);
+            const pathData = drawSmooth ? createSmoothPath(points) : createLinePath(points);
+
+            const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            line.setAttribute("d", pathData);
+            line.setAttribute("class", "line");
+
+            const fillPath = pathData + ` L ${points[points.length - 1].x},100 L 0,100 Z`;
+            const fill = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            fill.setAttribute("d", fillPath);
+            fill.setAttribute("class", "fill");
+
+            // Alte Linien und Füllungen entfernen, aber defs behalten
+            Array.from(svg.querySelectorAll('path.line, path.fill')).forEach(el => el.remove());
+            if (drawFill) {
+                svg.appendChild(fill);
+            }
+            svg.appendChild(line);
+        }
+
+        function handleMessage(data) {
+            //console.log('Rohdaten empfangen:', data);
+            const decodedData = JSON.parse(data);
+            //console.log('Decodierte Daten:', decodedData);
+            for (const parameter in decodedData) {
+                var root = document.documentElement;
+                console.log('Parameter:', parameter, 'Wert:', decodedData[parameter]);
+                switch (parameter) {
+                    case 'stocktext':
+                        stock.textContent = decodedData[parameter];
+                        break;
+                    case 'stockfont':
+                        root.style.setProperty('--stock-font', decodedData[parameter] + 'px');
+                        break;
+                    case 'trendtext':
+                        if (decodedData[parameter].charAt(0) === '-') {
+                            trend.className = 'negative';
+                        } else {
+                            trend.className = 'positive';
+                        }
+                        const value = document.querySelector("#trend .value");
+                        value.textContent = decodedData[parameter];
+                        break;
+                    case 'trendfont':
+                        root.style.setProperty('--trend-font', decodedData[parameter] + 'px');
+                        break;
+                    case 'trendpositive':
+                        root.style.setProperty('--trend-postive', decodedData[parameter]);
+                        break;
+                    case 'trendnegative':
+                        root.style.setProperty('--trend-negative', decodedData[parameter]);
+                        break;
+                    case 'pricetext':
+                        price.textContent = decodedData[parameter];
+                        break;
+                    case 'pricefont':
+                        root.style.setProperty('--price-font', decodedData[parameter] + 'px');
+                        break;
+                    case 'chartline':
+                        root.style.setProperty('--chart-line', decodedData[parameter]);
+                        break;
+                    case 'chartperiod':
+                        period.textContent = decodedData[parameter];
+                        break;
+                    case 'chartsmooth':
+                        drawSmooth = decodedData[parameter];
+                        break;
+                    case 'chartfill':
+                        drawFill = decodedData[parameter];
+                        break;
+                    case 'chartoffset':
+                        if (decodedData[parameter]) {
+                            drawOffset = decodedData[parameter];
+                        }
+                        break;
+                    case 'chartdata':
+                        if (decodedData[parameter]) {
+                            let arr = decodedData[parameter];
+                            if (typeof arr === "string") {
+                                console.log('string:', arr);
+                                arr = JSON.parse(arr);
+                            }
+                            if (Array.isArray(arr)) {
+                                drawChart(arr);
+                            } else {
+                                console.error("chartData ist kein Array:", arr);
+                            }
+                        }
+                        break;
+                    default:
+                        console.log('Unbekannter Parameter:', parameter);
+                        break;
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

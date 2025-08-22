@@ -1,0 +1,32 @@
+{
+    "translations": {
+        "de": {
+            "Stock Widget": "Aktien-Widget",
+            "Module for displaying stock prices in the Tile Visualization. Ideal for clear and concise overviews of financial and market data on dashboards.": "Modul zur Anzeige von Aktienkursen in der Kachelvisualisierung. Ideal für eine klare und kompakte Übersicht von Finanz- und Marktdaten auf Dashboards.",
+            "🚀 WKN/ISIN ...": "🚀 WKN/ISIN ...",
+            "Label:": "Beschriftung:",
+            "Font size:": "Schriftgröße:",
+            "💸 Trend ...": "💸 Trend ...",
+            "Color (Positive):": "Farbe (Positiv):",
+            "Color (Negative):": "Farbe (Negativ):",
+            "📈 Chart ...": "📈 Diagramm ...",
+            "Data:": "Daten:",
+            "Bottom offset:": "Unterer Versatz:",
+            "Draw smooth?": "Glatt zeichnen?",
+            "Draw fill?": "Füllung zeichnen?",
+            "Color (Line):": "Farbe (Linie):",
+            "Current day": "Laufender Tag",
+            "Current week": "Laufende Woche",
+            "Current month": "Laufender Monat",
+            "Current quarter": "Laufendes Quartal",
+            "Current half-year": "Laufendes Halbjahr",
+            "Current year": "Laufendes Jahr",
+            "1 D": "1 T",
+            "1 Y": "1 J",
+            "💰 Price ...": "💰 Preis ...",
+            "Development and debug information ...": "Entwicklungs- und Debuginformationen ...",
+            "🎗️ Source code, donation and licence ...": "🎗️ Quellcode, Spende und Lizenz ...",
+            "The software is free of charge for non-commercial use, I would appreciate a donation if you like the module.": "Die Software ist für die nicht kommerzielle Nutzung kostenlos, über eine Spende bei Gefallen des Moduls würde ich mich sehr freuen."
+        }
+    }
+}

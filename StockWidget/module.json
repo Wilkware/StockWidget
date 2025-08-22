@@ -1,0 +1,12 @@
+{
+    "id": "{7B805298-8C9A-D7DF-E5EA-C4F7EDED8577}",
+    "name": "Stock Widget",
+    "url": "https://wilkware.de/ip-symcon-module/",
+    "type": 3,
+    "vendor": "",
+    "aliases": [],
+    "parentRequirements": [],
+    "childRequirements": [],
+    "implemented": [],
+    "prefix": "WWXSW"
+}

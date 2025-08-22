@@ -1,0 +1,18 @@
+parameters:
+    level: 6
+    phpVersion: 80200
+
+    # Dein Modulverzeichnis analysieren
+    paths:
+        - ./
+
+    # Stubs mit IPS-Funktionen
+    scanDirectories:
+        - ../_ips-stubs/
+
+
+    ignoreErrors:
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::SetVisualizationType\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::UpdateVisualizationValue\(\)#'
+        - '#Function AC_GetLoggedValues not found.#'
+        
