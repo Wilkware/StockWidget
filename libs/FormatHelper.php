@@ -20,41 +20,13 @@ declare(strict_types=1);
 trait FormatHelper
 {
     /**
-     * Converts a hex color string (#RRGGBB or RRGGBB) to an integer.
-     * Returns -1 if the input is empty, null, or invalid.
-     *
-     * Examples:
-     *   colorHexToInt('#FF00AA') → 16711850
-     *   colorHexToInt('FF00AA')  → 16711850
-     *   colorHexToInt('')        → -1
-     *   colorHexToInt(null)      → -1
-     *   colorHexToInt('#XYZ123') → -1
-     *
-     * @param string|null $hex Hex color string with or without leading '#'
-     * @return int RGB integer representation or -1 on error
-     */
-    public function GetColorUnformatted(?string $hex): int
-    {
-        // Empty or null input → return -1
-        if (empty($hex)) {
-            return -1;
-        }
-        // Remove leading '#' if present
-        $hex = ltrim($hex, '#');
-        // Validate hex format (must be 6 hex digits)
-        if (!preg_match('/^[0-9A-Fa-f]{6}$/', $hex)) {
-            return -1;
-        }
-        // Convert to integer
-        return hexdec($hex);
-    }
-    /**
      * Pretty print json(array) data.
      *
      * @param array<int,array{0:string,1:string,2:int,3:?string}> $map Json keys to translation.
      * @param string $json       Json data string.
      * @param bool   $associated Print values with no json representation.
      * @param string $undefined  Output for no data.
+     *
      * @return string Pretty formated string.
      */
     private function PrettyPrint(?array $map, string $json, bool $associated = false, string $undefined = 'undefined'): string
@@ -108,6 +80,7 @@ trait FormatHelper
      * Get HTML rgb formated color.
      *
      * @param int $color Color value or -1 for transparency
+     *
      * @return string HTML coded color or empty string
      */
     private function GetColorFormatted(int $color): string
@@ -117,5 +90,94 @@ trait FormatHelper
         } else {
             return '';
         }
+    }
+
+    /**
+     * Converts a hex color string (#RRGGBB or RRGGBB) to an integer.
+     * Returns -1 if the input is empty, null, or invalid.
+     *
+     * Examples:
+     *   colorHexToInt('#FF00AA') → 16711850
+     *   colorHexToInt('FF00AA')  → 16711850
+     *   colorHexToInt('')        → -1
+     *   colorHexToInt(null)      → -1
+     *   colorHexToInt('#XYZ123') → -1
+     *
+     * @param string|null $hex Hex color string with or without leading '#'
+     *
+     * @return int RGB integer representation or -1 on error
+     */
+    private function GetColorUnformatted(?string $hex): int
+    {
+        // Empty or null input → return -1
+        if (empty($hex)) {
+            return -1;
+        }
+        // Remove leading '#' if present
+        $hex = ltrim($hex, '#');
+        // Validate hex format (must be 6 hex digits)
+        if (!preg_match('/^[0-9A-Fa-f]{6}$/', $hex)) {
+            return -1;
+        }
+        // Convert to integer
+        return hexdec($hex);
+    }
+
+    /**
+     * Get media type
+     *
+     * @param string $ext File extention
+     * @return string Media type data prefix
+     */
+    private function GetMediaType(string $ext): string
+    {
+        $type = '';
+        switch ($ext) {
+            case 'bmp':
+                $type = 'data:image/bmp;base64,';
+                break;
+            case 'jpg':
+            case 'jpeg':
+                $type = 'data:image/jpeg;base64,';
+                break;
+            case 'gif':
+                $type = 'data:image/gif;base64,';
+                break;
+            case 'png':
+                $type = 'data:image/png;base64,';
+                break;
+            case 'ico':
+                $type = 'data:image/x-icon;base64,';
+                break;
+            case 'webp':
+                $type = 'data:image/webp;base64,';
+                break;
+        }
+        return $type;
+    }
+
+    /**
+     * Returns a media object as base 64 image.
+     *
+     * @param int $media Media ID
+     *
+     * @return string Base64 coded image data
+     */
+    private function GetBase64Image(int $media): string
+    {
+        $data = '';
+        if (IPS_MediaExists($media)) {
+            $image = IPS_GetMedia($media);
+            if ($image['MediaType'] === MEDIATYPE_IMAGE) {
+                $file = explode('.', $image['MediaFile']);
+                $data = $this->GetMediaType(end($file));
+                // Only continue if content has been set. Otherwise, the image is not a supported file type.
+                if ($data) {
+                    // Append base64-encoded content of the image
+                    $data .= IPS_GetMediaContent($media);
+                }
+            }
+        }
+        return $data;
     }
 }
