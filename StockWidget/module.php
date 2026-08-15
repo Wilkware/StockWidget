@@ -2,27 +2,36 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../libs/_traits.php';  // Generell funktions
+/** Generell funktions */
+require_once __DIR__ . '/../libs/_traits.php';
 
-// CLASS StockWidget
+/** Namespaced traits */
+use Wilkware\StockWidget\DebugHelper;
+use Wilkware\StockWidget\FormatHelper;
+
+/**
+ *  CLASS StockWidget
+ */
 class StockWidget extends IPSModuleStrict
 {
+    // -------------------------------------------------------------------------
+    // Traits
+    // -------------------------------------------------------------------------
+
     use DebugHelper;
     use FormatHelper;
 
-    /**
-     * @var int Min IPS Object ID
-     */
+    // -------------------------------------------------------------------------
+    // Constants
+    // -------------------------------------------------------------------------
+
+    /** @var int Min IPS Object ID */
     private const IPS_MIN_ID = 10000;
 
-    /**
-     * @var string Archive GUID
-     */
+    /** @var string Archive GUID */
     private const ARCHIVE_GUID = '{43192F0B-135B-4CE7-A0A7-1475603F3060}';
 
-    /**
-     * @var array<int,string>
-     */
+    /** @var array<int,string> */
     private const TWSW_MAP_PERIOD = [
         1   => '1 D',
         7   => '1 W',
@@ -31,6 +40,10 @@ class StockWidget extends IPSModuleStrict
         180 => '1 H',
         356 => '1 Y'
     ];
+
+    // -------------------------------------------------------------------------
+    // Methods
+    // -------------------------------------------------------------------------
 
     /**
      * In contrast to Construct, this function is called only once when creating the instance and starting IP-Symcon.
@@ -46,17 +59,20 @@ class StockWidget extends IPSModuleStrict
         // Stock ...
         $this->RegisterPropertyString('StockLabel', '');
         $this->RegisterPropertyInteger('StockFont', 10);
+
         // Trend ...
         $this->RegisterPropertyInteger('TrendVariable', 1);
         $this->RegisterPropertyInteger('TrendFont', 12);
         $this->RegisterPropertyInteger('TrendPositive', 0x00FF00);
         $this->RegisterPropertyInteger('TrendNegative', 0xFF0000);
+
         // Chart ...
         $this->RegisterPropertyInteger('ChartData', 1);
         $this->RegisterPropertyInteger('ChartLine', 0x11A0F3);
         $this->RegisterPropertyBoolean('ChartSmooth', true);
         $this->RegisterPropertyBoolean('ChartFill', true);
         $this->RegisterPropertyInteger('ChartOffset', 0);
+
         // Price ...
         $this->RegisterPropertyInteger('PriceVariable', 1);
         $this->RegisterPropertyInteger('PriceFont', 18);

@@ -9,6 +9,8 @@
 Dieses Modul dient zur Anzeige von Aktienkursen in der Kachelvisualisierung.  
 Ideal für eine klare und kompakte Übersicht von Finanz- und Marktdaten auf Dashboards.
 
+![Module-Visu](imgs/stock-widget.png)
+
 ## Inhaltverzeichnis
 
 1. [Funktionsumfang](#user-content-1-funktionsumfang)
