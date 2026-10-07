@@ -7,7 +7,7 @@
         :root {
             --stock-font: 12px;
             --price-font: 24px;
-            --trend-positiv: #58A906;
+            --trend-positive: #58A906;
             --trend-negative: #F35A2C;
             --trend-font: 14px;
             --chart-line: #11A0F3;
@@ -31,21 +31,21 @@
         /* Container mit 2 Spalten */
         #container {
             display: flex;
-            margin: 80px 0px 0px 0px;
-            height: calc(100% - (80px));
+            margin: var(--margin-top) 0px 0px 0px;
+            height: calc(100% - var(--margin-top));
         }
 
         #header {
             position: absolute;
-            top: 45px;
-            left: 20px;
+            top: var(--margin-top);
+            left: var(--margin-side);
         }
 
         #footer {
             position: absolute;
-            left: 20px;
-            right: 20px;
-            bottom: 15px;
+            left: var(--margin-side);
+            right: var(--margin-side);
+            bottom: var(--margin-bottom);
             display: flex;
             align-items: baseline;
             justify-content: space-between;
@@ -79,7 +79,7 @@
         }
 
         #trend.positive{
-            color: var(--trend-positiv);
+            color: var(--trend-positive);
         }
 
         #trend.negative{
@@ -131,16 +131,39 @@
         </svg>
     </div>
     <script>
+        // ── INIT: set root/style variables ───────────────────────────────────
+        const p = new URLSearchParams(location.search);
+        const root = document.documentElement;
+        const m = {
+            margintop: ['--margin-top'],
+            marginside: ['--margin-side'],
+            marginbottom: ['--margin-bottom']
+        };
+        for (const k in m) {
+            const v = p.get(k);
+            if (!v) continue;
+            root.style.setProperty(m[k], `${v}px`);
+        }
+
+        // ── ELEMENTS: ────────────────────────────────────────────────────────
+        const elStock = document.getElementById('stock');
+        const elTrend = document.getElementById('trend');
+        const elTrendValue = elTrend.querySelector('.value');
+        const elPrice = document.getElementById('price');
+        const elPeriod = document.getElementById('period');
+        const elChart = document.getElementById('chart');
+
+        // ── STATE: ───────────────────────────────────────────────────────────
         let drawSmooth = true;
         let drawFill = true;
         let drawOffset = 0;
 
-        // Funktion zum Erzeugen einer normale Linie
+        // ── FUNCTION: to draw a straight line ────────────────────────────────
         function createLinePath(pts) {
-            return "M " + pts.map(p => `${p.x},${p.y}`).join(" L ");
+            return "M " + pts.map(pt => `${pt.x},${pt.y}`).join(" L ");
         }
 
-        // Funktion zum Erzeugen eines glatten Pfads mit Bezier-Kurven
+        // ── FUNCTION: to create a smooth path using Bézier curves ────────────
         function createSmoothPath(pts) {
             let d = `M ${pts[0].x},${pts[0].y}`;
             for (let i = 1; i < pts.length - 1; i++) {
@@ -152,9 +175,19 @@
             return d;
         }
 
-        // Funktion zum Zeichnen, Variante wählbar
+        // ── FUNCTION: for drawing, choice of variants ────────────────────────
         function drawChart(data) {
-            const svg = document.getElementById('chart');
+            const svg = elChart;
+
+            // Nothing to draw -> remove old paths and leave
+            if (!Array.isArray(data) || data.length === 0) {
+                Array.from(svg.querySelectorAll('path.line, path.fill')).forEach(el => el.remove());
+                return;
+            }
+            // A single value -> draw a flat line
+            if (data.length === 1) {
+                data = [data[0], data[0]];
+            }
 
             const stepX = 100 / (data.length - 1);
             const minVal = Math.min(...data);
@@ -179,7 +212,6 @@
                     return { x, y };
                 });
             }
-            console.log("Points:", points);
             const pathData = drawSmooth ? createSmoothPath(points) : createLinePath(points);
 
             const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -199,40 +231,34 @@
             svg.appendChild(line);
         }
 
+        // ── SDK: handleMessage (data transfer) ───────────────────────────────
         function handleMessage(data) {
-            //console.log('Rohdaten empfangen:', data);
             const decodedData = JSON.parse(data);
-            //console.log('Decodierte Daten:', decodedData);
             for (const parameter in decodedData) {
-                var root = document.documentElement;
-                console.log('Parameter:', parameter, 'Wert:', decodedData[parameter]);
                 switch (parameter) {
                     case 'stocktext':
-                        stock.textContent = decodedData[parameter];
+                        elStock.textContent = decodedData[parameter];
                         break;
                     case 'stockfont':
                         root.style.setProperty('--stock-font', decodedData[parameter] + 'px');
                         break;
-                    case 'trendtext':
-                        if (decodedData[parameter].charAt(0) === '-') {
-                            trend.className = 'negative';
-                        } else {
-                            trend.className = 'positive';
-                        }
-                        const value = document.querySelector("#trend .value");
-                        value.textContent = decodedData[parameter];
+                    case 'trendtext': {
+                        const txt = decodedData[parameter] ?? '';
+                        elTrend.className = txt.trim().startsWith('-') ? 'negative' : 'positive';
+                        elTrendValue.textContent = txt;
                         break;
+                    }
                     case 'trendfont':
                         root.style.setProperty('--trend-font', decodedData[parameter] + 'px');
                         break;
                     case 'trendpositive':
-                        root.style.setProperty('--trend-postive', decodedData[parameter]);
+                        root.style.setProperty('--trend-positive', decodedData[parameter]);
                         break;
                     case 'trendnegative':
                         root.style.setProperty('--trend-negative', decodedData[parameter]);
                         break;
                     case 'pricetext':
-                        price.textContent = decodedData[parameter];
+                        elPrice.textContent = decodedData[parameter];
                         break;
                     case 'pricefont':
                         root.style.setProperty('--price-font', decodedData[parameter] + 'px');
@@ -241,7 +267,7 @@
                         root.style.setProperty('--chart-line', decodedData[parameter]);
                         break;
                     case 'chartperiod':
-                        period.textContent = decodedData[parameter];
+                        elPeriod.textContent = decodedData[parameter];
                         break;
                     case 'chartsmooth':
                         drawSmooth = decodedData[parameter];
@@ -250,15 +276,12 @@
                         drawFill = decodedData[parameter];
                         break;
                     case 'chartoffset':
-                        if (decodedData[parameter]) {
-                            drawOffset = decodedData[parameter];
-                        }
+                        drawOffset = Number(decodedData[parameter]) || 0;
                         break;
                     case 'chartdata':
                         if (decodedData[parameter]) {
                             let arr = decodedData[parameter];
                             if (typeof arr === "string") {
-                                console.log('string:', arr);
                                 arr = JSON.parse(arr);
                             }
                             if (Array.isArray(arr)) {

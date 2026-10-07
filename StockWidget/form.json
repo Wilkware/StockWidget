@@ -111,27 +111,27 @@
                             "name": "ChartData",
                             "options": [
                                 {
-                                    "caption": "Current day",
+                                    "caption": "1 day",
                                     "value": 1
                                 },
                                 {
-                                    "caption": "Current week",
+                                    "caption": "1 week",
                                     "value": 7
                                 },
                                 {
-                                    "caption": "Current month",
+                                    "caption": "1 month",
                                     "value": 30
                                 },
                                 {
-                                    "caption": "Current quarter",
+                                    "caption": "1 quarter",
                                     "value": 90
                                 },
                                 {
-                                    "caption": "Current half-year",
+                                    "caption": "1 half-year",
                                     "value": 180
                                 },
                                 {
-                                    "caption": "Current year",
+                                    "caption": "1 year",
                                     "value": 365
                                 }
                             ],
@@ -246,9 +246,30 @@
                             "onClick": "echo 'https://creativecommons.org/licenses/by-nc-sa/4.0/';"
                         }
                     ]
+                },
+                {
+                    "type": "Label",
+                    "name": "Version",
+                    "color": 8421504
                 }
             ]
         }
     ],
-    "status": []
+    "status": [
+        {
+            "code": 104,
+            "icon": "inactive",
+            "caption": "Please select a price variable!"
+        },
+        {
+            "code": 201,
+            "icon": "error",
+            "caption": "The selected price variable does not exist!"
+        },
+        {
+            "code": 202,
+            "icon": "error",
+            "caption": "The price variable is not logged by the archive (no chart data)!"
+        }
+    ]
 }
