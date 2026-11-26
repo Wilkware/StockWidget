@@ -287,12 +287,12 @@
                             if (Array.isArray(arr)) {
                                 drawChart(arr);
                             } else {
-                                console.error("chartData ist kein Array:", arr);
+                                console.error('chartData is not an array:', arr);
                             }
                         }
                         break;
                     default:
-                        console.log('Unbekannter Parameter:', parameter);
+                        console.warn('Unknown parameter:', parameter);
                         break;
                 }
             }

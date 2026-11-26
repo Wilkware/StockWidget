@@ -7,6 +7,7 @@
             "Label:": "Beschriftung:",
             "Font size:": "Schriftgröße:",
             "💸 Trend ...": "💸 Trend ...",
+            "Variable:": "Variable:",
             "Color (Positive):": "Farbe (Positiv):",
             "Color (Negative):": "Farbe (Negativ):",
             "📈 Chart ...": "📈 Diagramm ...",
@@ -26,9 +27,8 @@
             "1 Y": "1 J",
             "💰 Price ...": "💰 Preis ...",
             "Please select a price variable!": "Bitte eine Preisvariable auswählen!",
-            "The selected price variable does not exist!": "Die ausgewählte Preisvariable existiert nicht!",
+            "The selected price or trend variable does not exist!": "Die ausgewählte Preis- oder Trendvariable existiert nicht!",
             "The price variable is not logged by the archive (no chart data)!": "Die Preisvariable wird nicht im Archiv geloggt (keine Diagrammdaten)!",
-            "Development and debug information ...": "Entwicklungs- und Debuginformationen ...",
             "🎗️ Source code, donation and licence ...": "🎗️ Quellcode, Spende und Lizenz ...",
             "The software is free of charge for non-commercial use, I would appreciate a donation if you like the module.": "Die Software ist für die nicht kommerzielle Nutzung kostenlos, über eine Spende bei Gefallen des Moduls würde ich mich sehr freuen."
         }

@@ -3,7 +3,7 @@
 [![Home](https://img.shields.io/badge/Home-wilkware.de-0b1830.svg?style=flat-square)](https://wilkware.de/module/aktien-widget/)
 [![Version](https://img.shields.io/badge/Symcon-PHP--Modul-red.svg?style=flat-square)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Product](https://img.shields.io/badge/Symcon%20Version-8.1-blue.svg?style=flat-square)](https://www.symcon.de/produkt/)
-[![Version](https://img.shields.io/badge/Modul%20Version-1.1.20260930-orange.svg?style=flat-square)](https://github.com/Wilkware/StockWidget)
+[![Version](https://img.shields.io/badge/Modul%20Version-1.1.20261126-orange.svg?style=flat-square)](https://github.com/Wilkware/StockWidget)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg?style=flat-square)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![Actions](https://img.shields.io/github/actions/workflow/status/wilkware/StockWidget/ci.yml?branch=main&label=CI&style=flat-square)](https://github.com/Wilkware/StockWidget/actions)
 
@@ -12,7 +12,7 @@ Ideal für eine klare und kompakte Übersicht von Finanz- und Marktdaten auf Das
 
 ![Module-Visu](imgs/stock-widget.png)
 
-## Inhaltverzeichnis
+## Inhaltsverzeichnis
 
 1. [Funktionsumfang](#user-content-1-funktionsumfang)
 2. [Voraussetzungen](#user-content-2-voraussetzungen)
@@ -31,6 +31,8 @@ Durch die Nutzung des HTML-SDKs kann dieses Widget den Aktienkurs einer WKN oder
 ### 2. Voraussetzungen
 
 * Symcon ab Version 8.1
+* Variable mit dem aktuellen Kurs (Preis), die über das Archiv geloggt wird – ohne Archivierung kann keine Kurslinie gezeichnet werden
+* Optional: Variable mit der Tagesveränderung (Trend) als Text, z.B. '+0,60 (+10%)'
 
 ### 3. Installation
 
@@ -56,29 +58,29 @@ Schriftgröße                        | zu verwendende Schriftgröße in Pixel
 
 > 💸 Trend ...
 
-Name| Beschreibung
+Name                                | Beschreibung
 ------------------------------------|--------------------------------------------
-Variable                            | Tagesveränderung in folgendem Format +/- Preiswert (prozenturaler Veränderung), z.B. '+0,60 (+10%)'
+Variable                            | Tagesveränderung in folgendem Format +/- Preiswert (prozentualer Veränderung), z.B. '+0,60 (+10%)'
 Schriftgröße                        | zu verwendende Schriftgröße in Pixel
-Farbe(Positiv)                      | Farbwert für positiven Trend
-Farbe(Negativ)                      | Farbwert für negativen Trend
+Farbe (Positiv)                     | Farbwert für positiven Trend
+Farbe (Negativ)                     | Farbwert für negativen Trend
 
 > 📈 Diagramm ...
 
 Name                                | Beschreibung
 ------------------------------------|--------------------------------------------
 Daten                               | Auswahl der zu verwendenden Daten für die Kurslinie
-Farbe(Linie)                        | Farbwert für Liniendarstellung
+Farbe (Linie)                       | Farbwert für Liniendarstellung
 Glatt zeichnen                      | Auswahl ob die Linie weich oder kantig (Direktverbindung Punkte) gezeichnet werden soll.
 Füllung zeichnen                    | Darstellung einer nach unten auslaufenden farblichen Flächenfüllung (Gradient)
-Unterer Versatz                     | Wieviel Prozent vom unteren Kachelrand soll die Liniendarstellung Abstand halten, kann zur besseren Lesbarkeit des aktuellen Preises genutzt werden.
+Unterer Versatz                     | Wie viel Prozent vom unteren Kachelrand soll die Liniendarstellung Abstand halten, kann zur besseren Lesbarkeit des aktuellen Preises genutzt werden.
 
 __HINWEIS ZU DATEN DER KURSLINIE__: die Kennlinie (außer bei 1 Tag) nutzt den letzten geloggten Wert an den entsprechenden vergangenen Tagen. Der Zeitraum ist rollierend, d.h. 1 Woche entspricht den letzten 7 Tagen (inkl. heute), 1 Monat den letzten 30 Tagen usw. Wochenenden und Tage ohne Werte/Handel werden ignoriert bzw. nicht in die Darstellung mit einbezogen.
-Bei 1 Tag werden die Daten des aktuellen Tages genutzt. Sollte an dem Tag kein Handel oder noch keine Daten eingelaufen sein, werden weiterhin die Tagesdaten des letzen Handelstages genommen, z.B. am Sonntag die Daten vom Freitag oder Dienstag früh vor 9 Uhr die Daten vom Montag.
+Bei 1 Tag werden die Daten des aktuellen Tages genutzt. Sollte an dem Tag kein Handel oder noch keine Daten eingelaufen sein, werden weiterhin die Tagesdaten des letzten Handelstages genommen, z.B. am Sonntag die Daten vom Freitag oder Dienstag früh vor 9 Uhr die Daten vom Montag.
 
 > 💰 Preis ...
 
-Name                               | Beschreibung
+Name                                | Beschreibung
 ------------------------------------|--------------------------------------------
 Variable                            | Geloggte Preisvariable des aktuellen Kurses (wird für Kennlinie genutzt)
 Schriftgröße                        | zu verwendende Schriftgröße in Pixel
@@ -106,11 +108,11 @@ Das Modul stellt keine direkten Funktionsaufrufe zur Verfügung.
 
 ### 9. Versionshistorie
 
-v1.1.20260930
+v1.1.20261126
 
 * _NEU_: Versionsanzeige im Konfigurationsformular
 * _NEU_: Zeiträume als rollierende Zeitspannen benannt (1 Tag, 1 Woche, ... 1 Jahr)
-* _NEU_: Eigene Statusmeldungen (keine bzw. ungültige Preisvariable, Preisvariable wird nicht geloggt)
+* _NEU_: Eigene Statusmeldungen (keine Preisvariable, ungültige Preis- oder Trendvariable, Preisvariable wird nicht geloggt)
 * _NEU_: Initialisierung erst nach vollständigem Systemstart
 * _NEU_: Deutlich weniger Archivabfragen beim Aufbau der Kurslinie, Tageskurve auf max. 200 Punkte reduziert
 * _NEU_: Namespaces für Bibliotheken eingeführt

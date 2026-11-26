@@ -39,14 +39,14 @@ class StockWidget extends IPSModuleStrict
     /** @var int Max. number of chart points for the intraday chart */
     private const MAX_POINTS = 200;
 
-    /** @var int Status: price variable does not exist */
+    /** @var int Status: price or trend variable does not exist */
     private const STATUS_NO_VARIABLE = 201;
 
     /** @var int Status: price variable is not logged by the archive */
     private const STATUS_NOT_LOGGED = 202;
 
     /** @var array<int,string> */
-    private const TWSW_MAP_PERIOD = [
+    private const SW_MAP_PERIOD = [
         1   => '1 D',
         7   => '1 W',
         30  => '1 M',
@@ -120,8 +120,8 @@ class StockWidget extends IPSModuleStrict
 
         // Extract Version
         $instance = IPS_GetInstance($this->InstanceID);
-        $modul = IPS_GetModule($instance['ModuleInfo']['ModuleID']);
-        $library = IPS_GetLibrary($modul['LibraryID']);
+        $module = IPS_GetModule($instance['ModuleInfo']['ModuleID']);
+        $library = IPS_GetLibrary($module['LibraryID']);
         $version = sprintf('v%s.%d', $library['Version'], $library['Build']);
         $this->ModifyFormElement($form['actions'], 'Version', function (array &$element) use ($version): void
         {
@@ -159,6 +159,7 @@ class StockWidget extends IPSModuleStrict
         }
 
         // Register all references and messages
+        $missing = false;
         $variables = ['TrendVariable', 'PriceVariable'];
         foreach ($variables as $variable) {
             $vid = $this->ReadPropertyInteger($variable);
@@ -168,6 +169,7 @@ class StockWidget extends IPSModuleStrict
                     $this->RegisterMessage($vid, VM_UPDATE);
                 } else {
                     $this->LogDebug(__FUNCTION__, $variable . ' does not exist!');
+                    $missing = true;
                     if ($variable == 'PriceVariable') {
                         // Clear old chart data and update the display anyway
                         $this->SetBuffer('DailyCache', '');
@@ -192,6 +194,8 @@ class StockWidget extends IPSModuleStrict
         $vid = $this->ReadPropertyInteger('PriceVariable');
         if ($vid < self::IPS_MIN_ID) {
             $this->SetStatus(IS_INACTIVE);
+        } elseif ($missing) {
+            $this->SetStatus(self::STATUS_NO_VARIABLE);
         } elseif (($aid = $this->GetArchiveID()) === 0 || !AC_GetLoggingStatus($aid, $vid)) {
             $this->LogDebug(__FUNCTION__, 'Price variable is not logged -> no chart data!');
             $this->SetStatus(self::STATUS_NOT_LOGGED);
@@ -276,7 +280,7 @@ class StockWidget extends IPSModuleStrict
         $result['trendpositive'] = $this->GetColorFormatted($this->ReadPropertyInteger('TrendPositive'));
         $result['trendnegative'] = $this->GetColorFormatted($this->ReadPropertyInteger('TrendNegative'));
         $result['chartline'] = $this->GetColorFormatted($this->ReadPropertyInteger('ChartLine'));
-        $result['chartperiod'] = $this->Translate(self::TWSW_MAP_PERIOD[$this->ReadPropertyInteger('ChartData')] ?? '');
+        $result['chartperiod'] = $this->Translate(self::SW_MAP_PERIOD[$this->ReadPropertyInteger('ChartData')] ?? '');
         $result['chartsmooth'] = $this->ReadPropertyBoolean('ChartSmooth');
         $result['chartfill'] = $this->ReadPropertyBoolean('ChartFill');
         $result['chartoffset'] = $this->ReadPropertyInteger('ChartOffset');

@@ -14,12 +14,13 @@
                     "items": [
                         {
                             "type": "Label",
-                            "label": "Stock Widget",
+                            "caption": "Stock Widget",
+                            "link": false,
                             "bold": true
                         },
                         {
                             "type": "Label",
-                            "label": "Module for displaying stock prices in the Tile Visualization. Ideal for clear and concise overviews of financial and market data on dashboards."
+                            "caption": "Module for displaying stock prices in the Tile Visualization. Ideal for clear and concise overviews of financial and market data on dashboards."
                         }
                     ]
                 }
@@ -264,7 +265,7 @@
         {
             "code": 201,
             "icon": "error",
-            "caption": "The selected price variable does not exist!"
+            "caption": "The selected price or trend variable does not exist!"
         },
         {
             "code": 202,
